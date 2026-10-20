@@ -3,6 +3,7 @@ import SwiftUI
 @main
 struct BrumbrumApp: App {
     @State private var model = AppModel.shared
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some Scene {
         WindowGroup {
@@ -10,7 +11,15 @@ struct BrumbrumApp: App {
                 .environment(model)
                 .preferredColorScheme(.dark)
                 .tint(.orange)
+                .onAppear { keepAwake(true) }
         }
+        .onChange(of: scenePhase) { _, phase in keepAwake(phase == .active) }
+    }
+
+    /// The phone sits in a mount while driving: keep the screen on and undimmed
+    /// whenever the app is in front. iOS only honours this for the foreground app.
+    private func keepAwake(_ on: Bool) {
+        UIApplication.shared.isIdleTimerDisabled = on
     }
 }
 
