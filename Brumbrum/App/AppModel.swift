@@ -12,6 +12,28 @@ struct AppSettings: Codable, Equatable {
     var manualLatency = 0.15           // fallback when no route profile exists
     var latencyByRoute: [String: Double] = [:]
     var hearingNoticeShown = false
+    var recordDriveLogs = false
+    var gpsLag = 0.8                   // s; tune from drive logs (Tools/analyze_log.py)
+}
+
+extension AppSettings {
+    /// Tolerant decoding: fields added in later versions fall back to defaults
+    /// instead of discarding everything the user had saved.
+    init(from decoder: Decoder) throws {
+        self.init()
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        selectedEngineID = try c.decodeIfPresent(String.self, forKey: .selectedEngineID) ?? selectedEngineID
+        level = try c.decodeIfPresent(Double.self, forKey: .level) ?? level
+        ceiling = try c.decodeIfPresent(Double.self, forKey: .ceiling) ?? ceiling
+        speedCap = try c.decodeIfPresent(Bool.self, forKey: .speedCap) ?? speedCap
+        gradientCompensation = try c.decodeIfPresent(Bool.self, forKey: .gradientCompensation) ?? gradientCompensation
+        predictive = try c.decodeIfPresent(Bool.self, forKey: .predictive) ?? predictive
+        manualLatency = try c.decodeIfPresent(Double.self, forKey: .manualLatency) ?? manualLatency
+        latencyByRoute = try c.decodeIfPresent([String: Double].self, forKey: .latencyByRoute) ?? latencyByRoute
+        hearingNoticeShown = try c.decodeIfPresent(Bool.self, forKey: .hearingNoticeShown) ?? hearingNoticeShown
+        recordDriveLogs = try c.decodeIfPresent(Bool.self, forKey: .recordDriveLogs) ?? recordDriveLogs
+        gpsLag = try c.decodeIfPresent(Double.self, forKey: .gpsLag) ?? gpsLag
+    }
 }
 
 @Observable
@@ -151,6 +173,13 @@ final class AppModel {
 
     func toggleMute() { setMuted(!muted) }
 
+    /// Instant rev that bypasses the sensors, so you hear the output path's
+    /// delay on its own (compare CarPlay against the phone speaker).
+    func blip() {
+        if mode == .off { startLive() }
+        loop.update { $0.blipCount += 1 }
+    }
+
     func setMuted(_ m: Bool) {
         muted = m
         loop.update { $0.muted = m; $0.fadeSeconds = m ? 0.03 : 0.4 }
@@ -227,8 +256,10 @@ final class AppModel {
             c.speedCap = s.speedCap
             c.predictive = s.predictive
             c.latency = latency
+            c.logging = s.recordDriveLogs
         }
         loop.sensor.gradientCompensation = s.gradientCompensation
+        loop.sensor.gpsLag = s.gpsLag
     }
 
     func resetAMax() { loop.resetLearnedAMax() }

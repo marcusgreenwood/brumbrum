@@ -186,7 +186,7 @@ final class Powertrain {
 
         let limiter = target >= red - 1
         target = min(target, red)
-        let follow = shiftT >= 0 ? 60.0 : 25.0
+        let follow = shiftT >= 0 ? 60.0 : 40.0
         rpm += (target - rpm) * min(dt * follow, 1)
         return PowertrainOutput(rpm: rpm, load: load, gear: gear + 1, shiftCut: shiftCut,
                                 limiter: limiter, shifting: shiftT >= 0)

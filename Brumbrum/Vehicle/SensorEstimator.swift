@@ -33,9 +33,10 @@ struct LowPass2 {
 /// Produces one `VehicleState` at 100 Hz from CoreMotion and CoreLocation.
 ///
 /// Longitudinal acceleration is the phone's acceleration projected on the
-/// calibrated forward axis and low-passed at 5 Hz. Speed is a 1-D Kalman filter
-/// that integrates that acceleration and corrects on each GPS fix with a gain
-/// from `speedAccuracy`.
+/// calibrated forward axis. Speed comes from `SpeedFusion`: the motion sensors
+/// lead and GPS only corrects slowly, compared against the estimate from when
+/// each fix was really measured. Load uses a 6 Hz low-passed copy of the
+/// acceleration to reject mount resonance.
 final class SensorEstimator: NSObject, CLLocationManagerDelegate {
     enum CalibrationPhase: Equatable { case idle, orientation(progress: Double), forward(progress: Double), done, failed(String) }
 
@@ -48,6 +49,12 @@ final class SensorEstimator: NSObject, CLLocationManagerDelegate {
         var forwardResolved = false
         var motionAvailable = false
         var phase: CalibrationPhase = .idle
+        var rawAccel = 0.0            // unfiltered longitudinal, m/s²
+        var bias = 0.0                // learned accelerometer bias (+ slope), m/s²
+        var stationary = false
+        var speedStdDev = 0.0
+        var gpsInnovation = 0.0       // GPS minus delayed estimate at the last fix
+        var gpsFixCount = 0
     }
 
     private let motion = CMMotionManager()
@@ -65,19 +72,25 @@ final class SensorEstimator: NSObject, CLLocationManagerDelegate {
     private var latest = VehicleState()
     private var diag = Diagnostics()
     var gradientCompensation = false
+    /// How far iOS GPS speed trails reality; tuned from drive logs.
+    var gpsLag: Double {
+        get { lock.lock(); defer { lock.unlock() }; return gpsLagValue }
+        set { lock.lock(); gpsLagValue = newValue; lock.unlock() }
+    }
+    private var gpsLagValue = 0.8
 
     // Motion-queue state
     private(set) var calibration: MountCalibration?
-    private var lowPass = LowPass2(cutoff: 5, sampleRate: 100)
-    private var speed = 0.0
-    private var speedVar = 4.0
+    private var lowPass = LowPass2(cutoff: 6, sampleRate: 100)
+    private var fusion = SpeedFusion()
     private var lastAccel = 0.0
     private var jerk = 0.0
-    private var lastFixTime: Date?
+    private var lastFixTime: TimeInterval?   // uptime clock
     private var lastFixSpeed: Double?
     private var gpsAccel = 0.0
-    private var imuAccelSlow = 0.0
-    private var slopeAccel = 0.0         // g·sin θ estimate
+    private var lastMotionTime: TimeInterval?
+    private var gpsFixCount = 0
+    private var lastInnovation = 0.0
     private var gravitySlow = SIMD3<Double>(0, 0, -1)
     private var tiltedSince: TimeInterval?
 
@@ -189,7 +202,7 @@ final class SensorEstimator: NSObject, CLLocationManagerDelegate {
         }
 
         guard var cal = calibration else {
-            publish(VehicleState(speed: speed, accel: 0, jerk: 0, confidence: 0), mountMoved: false)
+            publish(VehicleState(speed: fusion.speed, accel: 0, jerk: 0, confidence: 0), mountMoved: false)
             return
         }
 
@@ -227,42 +240,53 @@ final class SensorEstimator: NSObject, CLLocationManagerDelegate {
         }
 
         guard let forward = cal.forward else {
-            publish(VehicleState(speed: speed, accel: 0, jerk: 0, confidence: 0.1), mountMoved: mountMoved)
+            publish(VehicleState(speed: fusion.speed, accel: 0, jerk: 0, confidence: 0.1), mountMoved: mountMoved)
             return
         }
 
         // Proper acceleration along the car's axis: user acceleration plus whatever
         // part of gravity has rotated onto the forward axis (g·sin θ on a slope).
         let rawLong = simd_dot(ua, forward) + simd_dot(g * 9.81, forward) * -1
+        let dtMotion = lastMotionTime.map { min(max(m.timestamp - $0, 0.001), 0.05) } ?? dt
+        lastMotionTime = m.timestamp
+
+        // Speed: integrate the unfiltered signal (integration is itself a low-pass,
+        // so filtering first would only add lag). The bias state soaks up sensor
+        // offset and slope; GPS and stops keep it honest.
+        fusion.config.gpsLag = gpsLag
+        fusion.predict(acceleration: rawLong, at: m.timestamp, dt: dtMotion)
+
+        // Load: low-passed against mount resonance. Uncorrected, a climb reads as
+        // extra load (arguably true motor torque); corrected removes bias and slope.
         var aLong = lowPass.process(rawLong)
+        if gradientCompensation { aLong -= fusion.bias }
 
-        // Gradient: the IMU disagrees with the GPS speed derivative by g·sin θ.
-        imuAccelSlow += (aLong - imuAccelSlow) * 0.005
-        slopeAccel += ((imuAccelSlow - gpsAccel) - slopeAccel) * 0.002
-        if gradientCompensation { aLong -= slopeAccel }
-
-        // Kalman predict
-        speed = max(speed + aLong * dt, 0)
-        speedVar += 0.3 * dt
-        let newJerk = (aLong - lastAccel) / dt
+        let newJerk = (aLong - lastAccel) / dtMotion
         jerk += (newJerk - jerk) * 0.1
         lastAccel = aLong
 
-        let gpsAge = lastFixTime.map { Date().timeIntervalSince($0) } ?? 99
+        let gpsAge = lastFixTime.map { m.timestamp - $0 } ?? 99
         var confidence = 1.0
-        if gpsAge > 3 { confidence -= min((gpsAge - 3) / 10, 0.6) }
-        confidence -= min(speedVar / 10, 0.3)
+        if gpsAge > 3 && !fusion.stationary { confidence -= min((gpsAge - 3) / 20, 0.5) }
+        confidence -= min(fusion.speedStdDev / 6, 0.3)
         if mountMoved { confidence = 0 }
-        publish(VehicleState(speed: speed, accel: aLong, jerk: jerk, confidence: max(confidence, 0)), mountMoved: mountMoved)
+        publish(VehicleState(speed: fusion.speed, accel: aLong, jerk: jerk, confidence: max(confidence, 0)),
+                mountMoved: mountMoved, rawAccel: rawLong)
     }
 
-    private func publish(_ s: VehicleState, mountMoved: Bool) {
+    private func publish(_ s: VehicleState, mountMoved: Bool, rawAccel: Double = 0) {
         lock.lock()
         latest = s
         diag.mountMoved = mountMoved
         diag.calibrated = calibration != nil
         diag.forwardResolved = calibration?.forward != nil
-        diag.gradientDeg = asin(min(max(slopeAccel / 9.81, -1), 1)) * 180 / .pi
+        diag.gradientDeg = asin(min(max(fusion.bias / 9.81, -1), 1)) * 180 / .pi
+        diag.rawAccel = rawAccel
+        diag.bias = fusion.bias
+        diag.stationary = fusion.stationary
+        diag.speedStdDev = fusion.speedStdDev
+        diag.gpsInnovation = lastInnovation
+        diag.gpsFixCount = gpsFixCount
         diag.motionAvailable = true
         diag.phase = phase
         lock.unlock()
@@ -271,22 +295,23 @@ final class SensorEstimator: NSObject, CLLocationManagerDelegate {
     // MARK: CLLocationManagerDelegate
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let loc = locations.last, loc.speed >= 0 else { return }
+        guard let loc = locations.last else { return }
+        // Ignore fixes iOS itself doesn't trust; the sensors coast through gaps.
+        guard loc.speed >= 0, loc.speedAccuracy >= 0, loc.horizontalAccuracy >= 0, loc.horizontalAccuracy < 50 else { return }
         let z = loc.speed
-        let acc = loc.speedAccuracy > 0 ? loc.speedAccuracy : 1.5
-        let time = loc.timestamp
+        let acc = loc.speedAccuracy
+        // Put the fix on the CoreMotion (uptime) clock.
+        let t = ProcessInfo.processInfo.systemUptime + loc.timestamp.timeIntervalSinceNow
         queue.addOperation { [self] in
             if let lt = lastFixTime, let ls = lastFixSpeed {
-                let dt = time.timeIntervalSince(lt)
+                let dt = t - lt
                 if dt > 0.2 { gpsAccel += ((z - ls) / dt - gpsAccel) * 0.5 }
             }
-            lastFixTime = time
+            lastFixTime = t
             lastFixSpeed = z
-            // Kalman correct
-            let r = max(acc, 0.2) * max(acc, 0.2)
-            let k = speedVar / (speedVar + r)
-            speed = max(speed + k * (z - speed), 0)
-            speedVar *= (1 - k)
+            fusion.gps(speed: z, accuracy: acc, measuredAt: t)
+            gpsFixCount += 1
+            lastInnovation = fusion.lastInnovation
             lock.lock()
             diag.gpsSpeed = z
             diag.gpsAccuracy = acc

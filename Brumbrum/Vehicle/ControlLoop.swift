@@ -25,6 +25,8 @@ struct TelemetrySnapshot {
     var sensors = SensorEstimator.Diagnostics()
     var predictionHorizon = 0.0
     var gate = 0.0
+    var blipping = false
+    var logging = false
 }
 
 /// The 100 Hz control thread: vehicle source → prediction → powertrain →
@@ -46,6 +48,8 @@ final class ControlLoop {
         var previewAuto = true
         var manualThrottle = 0.0
         var manualBrake = 0.0
+        var blipCount = 0                // each increment fires one throttle blip
+        var logging = false
     }
 
     let controls: TripleBuffer<ControlFrame>
@@ -67,6 +71,10 @@ final class ControlLoop {
     private var previewT = 0.0
     private var tickCount = 0
     private var lastSaved = CACurrentMediaTime()
+    private var lastBlipCount = 0
+    private var blipT = 99.0
+    private var logger: DriveLogger?
+    private var lastFixCount = 0
 
     static let aMaxKey = "aMaxCurve"
 
@@ -137,6 +145,9 @@ final class ControlLoop {
         if let s = newScenario { sim.reset(s) }
         if let e = newEngine { powertrain.setEngine(e, speed: cfg.mode == .testDrive ? sim.speed : 0) }
 
+        if cfg.blipCount != lastBlipCount { lastBlipCount = cfg.blipCount; blipT = 0 } else { blipT += dt }
+        let blipEnv = blipT < 1.2 ? exp(-blipT / 0.3) : 0
+
         var snap = TelemetrySnapshot()
         snap.mode = cfg.mode
         var frame = ControlFrame()
@@ -203,6 +214,18 @@ final class ControlLoop {
             }
         }
 
+        // Blip: an instant rev, bypassing sensors and prediction, so the output
+        // path's delay can be heard on its own. Opens the gate even uncalibrated.
+        if blipEnv > 0.01 {
+            let def = powertrain.def
+            frame.rpm = min(frame.rpm + Float((def.range.redlineRpm - def.range.idleRpm) * 0.5 * blipEnv), Float(def.range.redlineRpm))
+            frame.load = max(frame.load, Float(blipEnv * 0.95))
+            frame.limiter = 0
+            if cfg.mode != .off && !cfg.muted && !cfg.suspended { gateOpen = true }
+            snap.rpm = Double(frame.rpm)
+            snap.blipping = true
+        }
+
         // Level: user level under a hard ceiling, minus a speed-dependent cap that
         // counters the car's own speed-dependent volume compensation.
         var volume = min(cfg.level, 1) * min(cfg.ceiling, 0.95)
@@ -213,6 +236,23 @@ final class ControlLoop {
         frame.popCounter = powertrain.popCounter
         frame.blowoffCounter = powertrain.blowoffCounter
         controls.write(frame)
+
+        // Drive log, for tuning against real data.
+        if cfg.logging && cfg.mode != .off {
+            if logger == nil { logger = DriveLogger() }
+            let d = snap.sensors
+            let fixNew = d.gpsFixCount != lastFixCount
+            lastFixCount = d.gpsFixCount
+            logger?.write(DriveLogger.Row(
+                time: now, mode: cfg.mode.rawValue, rawAccel: d.rawAccel, accel: snap.accel, bias: d.bias,
+                speed: snap.speed, speedStd: d.speedStdDev, stationary: d.stationary,
+                gpsSpeed: d.gpsSpeed, gpsAccuracy: d.gpsAccuracy, gpsNew: fixNew, gpsInnovation: d.gpsInnovation,
+                rpm: Double(frame.rpm), load: Double(frame.load), gear: snap.gear, confidence: snap.confidence,
+                gate: gateOpen ? 1 : 0, blip: blipT == 0, latency: cfg.latency, horizon: snap.predictionHorizon))
+        } else if logger != nil {
+            logger = nil      // closes the file
+        }
+        snap.logging = logger != nil
 
         if tickCount % 3 == 0, let cb = onTelemetry {
             snap.gate = gateOpen ? 1 : 0

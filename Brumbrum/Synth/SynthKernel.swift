@@ -178,8 +178,8 @@ final class SynthKernel {
         let twoPi = 2 * Float.pi
 
         // Smoothers: every parameter is interpolated at audio rate.
-        let cRpm = smoothingCoeff(seconds: 0.012, sampleRate: sr)
-        let cLoad = smoothingCoeff(seconds: 0.018, sampleRate: sr)
+        let cRpm = smoothingCoeff(seconds: 0.008, sampleRate: sr)
+        let cLoad = smoothingCoeff(seconds: 0.012, sampleRate: sr)
         let cSpeed = smoothingCoeff(seconds: 0.1, sampleRate: sr)
         let cGate = smoothingCoeff(seconds: max(c.fadeSeconds, 0.005) / 3, sampleRate: sr)
         let cVol = smoothingCoeff(seconds: 0.05, sampleRate: sr)

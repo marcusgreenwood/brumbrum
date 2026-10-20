@@ -109,6 +109,8 @@ struct DiagnosticsStrip: View {
                     GridRow { stat("jerk", String(format: "%+.1f", t.jerk)); stat("confidence", String(format: "%.2f", t.confidence)) }
                     GridRow { stat("horizon", String(format: "%.0f ms", t.predictionHorizon * 1000)); stat("gps", t.sensors.gpsSpeed >= 0 ? String(format: "%.1f ±%.1f", t.sensors.gpsSpeed, t.sensors.gpsAccuracy) : "—") }
                     GridRow { stat("gradient", String(format: "%+.1f°", t.sensors.gradientDeg)); stat("mode", t.mode.rawValue) }
+                    GridRow { stat("bias", String(format: "%+.3f", t.sensors.bias)); stat("stopped", t.sensors.stationary ? "yes" : "no") }
+                    GridRow { stat("σ speed", String(format: "%.2f", t.sensors.speedStdDev)); stat("gps Δ", String(format: "%+.2f", t.sensors.gpsInnovation)) }
                 }
                 .font(.system(.caption, design: .monospaced))
                 SignedBar(value: t.load)

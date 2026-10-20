@@ -7,12 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		00458EF1B86AF607EA28FFAD /* SpeedFusion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1C3A484F66DCABDE0D4270 /* SpeedFusion.swift */; };
 		0414D5A2B894EE9D311579D0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A286D2D901C37DB5D3A74713 /* Assets.xcassets */; };
 		0F2DB7A064597FFD7827591B /* Engines in Resources */ = {isa = PBXBuildFile; fileRef = 6CF76A13F0295BCC77FBDB4A /* Engines */; };
 		11C9EE67943ADD57B93B7C28 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E64F19AEFD597090B3421659 /* SettingsView.swift */; };
 		208585715AA4F0DC710B13FB /* DSP.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDE87BACF6CB16B8D76FF827 /* DSP.swift */; };
 		3A29427441FAE27176E0F0B4 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC436E7A19B4406AA121190D /* AppModel.swift */; };
 		404A71281E84B90DFBA16013 /* EditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0736751946D3B75B59AACED /* EditorView.swift */; };
+		50111214CFA2ED3D6C3B65AD /* DriveLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92ACED9358C601BC1EFF1B49 /* DriveLogger.swift */; };
 		50DEC577367790F4A56C3161 /* LatencyMeasurer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4299D7DFA8234B879A9DD69B /* LatencyMeasurer.swift */; };
 		62ADB0D6E2952BFC375E480A /* DriveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C76838636D859FDC819DD0 /* DriveView.swift */; };
 		64AE94EAC23D1F9CE6301797 /* EngineLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F443F8A87EA464B820AA379D /* EngineLibrary.swift */; };
@@ -36,6 +38,7 @@
 /* Begin PBXFileReference section */
 		004A9A8742E3AA792BE97A48 /* SensorEstimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensorEstimator.swift; sourceTree = "<group>"; };
 		00C76838636D859FDC819DD0 /* DriveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveView.swift; sourceTree = "<group>"; };
+		0C1C3A484F66DCABDE0D4270 /* SpeedFusion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeedFusion.swift; sourceTree = "<group>"; };
 		104D99FF5505B43C140EA85D /* SimulatedDrive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatedDrive.swift; sourceTree = "<group>"; };
 		240CADF3E5997AD7A0A55722 /* GarageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GarageView.swift; sourceTree = "<group>"; };
 		2F5F5FB6F3961843DCF5BB43 /* Brumbrum.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Brumbrum.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -45,6 +48,7 @@
 		5F7368D039B605535C24D60A /* BrumbrumApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrumbrumApp.swift; sourceTree = "<group>"; };
 		65E287CFD4EBF0A17A8A14A9 /* EngineDefinition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngineDefinition.swift; sourceTree = "<group>"; };
 		6CF76A13F0295BCC77FBDB4A /* Engines */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Engines; path = Brumbrum/Engines; sourceTree = SOURCE_ROOT; };
+		92ACED9358C601BC1EFF1B49 /* DriveLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveLogger.swift; sourceTree = "<group>"; };
 		A286D2D901C37DB5D3A74713 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A2B40AF5C26DCBDCC2FCA731 /* Powertrain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Powertrain.swift; sourceTree = "<group>"; };
 		B8743EDE14FEBCDCC15E96EF /* ControlLoop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlLoop.swift; sourceTree = "<group>"; };
@@ -138,9 +142,11 @@
 			isa = PBXGroup;
 			children = (
 				B8743EDE14FEBCDCC15E96EF /* ControlLoop.swift */,
+				92ACED9358C601BC1EFF1B49 /* DriveLogger.swift */,
 				A2B40AF5C26DCBDCC2FCA731 /* Powertrain.swift */,
 				004A9A8742E3AA792BE97A48 /* SensorEstimator.swift */,
 				104D99FF5505B43C140EA85D /* SimulatedDrive.swift */,
+				0C1C3A484F66DCABDE0D4270 /* SpeedFusion.swift */,
 			);
 			path = Vehicle;
 			sourceTree = "<group>";
@@ -250,6 +256,7 @@
 				EEC13D84C1E4F8901BBF238B /* CarPlaySceneDelegate.swift in Sources */,
 				E9629ACA62350CA5BEDD03F5 /* ControlLoop.swift in Sources */,
 				208585715AA4F0DC710B13FB /* DSP.swift in Sources */,
+				50111214CFA2ED3D6C3B65AD /* DriveLogger.swift in Sources */,
 				62ADB0D6E2952BFC375E480A /* DriveView.swift in Sources */,
 				404A71281E84B90DFBA16013 /* EditorView.swift in Sources */,
 				CA1C20C6CCB4A59169E69B72 /* EngineDefinition.swift in Sources */,
@@ -261,6 +268,7 @@
 				EFCE2EE32D982D3F747BE949 /* SensorEstimator.swift in Sources */,
 				11C9EE67943ADD57B93B7C28 /* SettingsView.swift in Sources */,
 				8C51A4BB8E53E4F172FD3345 /* SimulatedDrive.swift in Sources */,
+				00458EF1B86AF607EA28FFAD /* SpeedFusion.swift in Sources */,
 				CB165D9212C5DA61FBBB4EAE /* SynthKernel.swift in Sources */,
 				ADB8BA8520F41AD1A47AC89F /* SynthProgram.swift in Sources */,
 				DD7C6D3BF6B6914C29704DC5 /* TestDriveView.swift in Sources */,

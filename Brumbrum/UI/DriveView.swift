@@ -73,6 +73,10 @@ struct DriveView: View {
                     .background(.white.opacity(0.1), in: Capsule())
                 Text("\(Int(model.currentLatency * 1000)) ms\(model.hasLatencyProfile ? "" : " (default)")")
                     .font(.caption2).foregroundStyle(.secondary)
+                if model.telemetry.logging {
+                    Label("REC", systemImage: "record.circle")
+                        .font(.caption2.bold()).foregroundStyle(.red)
+                }
             }
         }
     }
@@ -116,6 +120,19 @@ struct DriveView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(model.mode == .live ? .red : .green)
+
+                Button {
+                    model.blip()
+                } label: {
+                    VStack(spacing: 2) {
+                        Image(systemName: "bolt.fill").font(.title2)
+                        Text("Blip").font(.caption2.bold())
+                    }
+                    .frame(width: 72, height: 64)
+                }
+                .buttonStyle(.bordered)
+                .tint(model.telemetry.blipping ? .orange : .white)
+                .accessibilityHint("Revs the engine instantly to hear output delay")
 
                 Button {
                     model.toggleMute()

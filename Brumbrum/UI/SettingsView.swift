@@ -5,6 +5,7 @@ struct SettingsView: View {
     @State private var showWizard = false
     @State private var confirmReset = false
     @State private var showCarPreview = false
+    @State private var logs: [URL] = []
 
     var body: some View {
         @Bindable var model = model
@@ -64,10 +65,30 @@ struct SettingsView: View {
                 }
 
                 Section {
+                    Toggle("Record drive logs", isOn: $model.settings.recordDriveLogs)
+                    ForEach(logs, id: \.self) { url in
+                        ShareLink(item: url) {
+                            Label(url.deletingPathExtension().lastPathComponent, systemImage: "doc.text")
+                        }
+                    }
+                    .onDelete { idx in
+                        for i in idx { try? FileManager.default.removeItem(at: logs[i]) }
+                        logs = DriveLogger.allLogs()
+                    }
+                } header: { Text("Drive logs") } footer: {
+                    Text("Records sensors, GPS, speed estimate, rpm and load 100 times a second while the engine is on. Share a log to analyse it with Tools/analyze_log.py; they're also in the Files app under Brumbrum › Logs. Swipe to delete.")
+                }
+                .onAppear { logs = DriveLogger.allLogs() }
+
+                Section {
                     Toggle("Gradient compensation", isOn: $model.settings.gradientCompensation)
+                    VStack(alignment: .leading) {
+                        Text(String(format: "GPS lag %.2f s", model.settings.gpsLag)).font(.subheadline)
+                        Slider(value: $model.settings.gpsLag, in: 0...2, step: 0.05)
+                    }
                     Button("Reset learned acceleration curve", role: .destructive) { confirmReset = true }
                 } header: { Text("Estimation") } footer: {
-                    Text("Uncorrected, a climb reads as extra load — arguably closer to true motor torque. Try both.")
+                    Text("Uncorrected, a climb reads as extra load — arguably closer to true motor torque. Try both. GPS lag is how far iOS GPS speed trails reality; the analysis script measures it from a drive log.")
                 }
 
                 Section {
