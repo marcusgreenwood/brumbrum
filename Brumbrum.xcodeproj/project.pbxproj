@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0414D5A2B894EE9D311579D0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A286D2D901C37DB5D3A74713 /* Assets.xcassets */; };
 		0F2DB7A064597FFD7827591B /* Engines in Resources */ = {isa = PBXBuildFile; fileRef = 6CF76A13F0295BCC77FBDB4A /* Engines */; };
 		11C9EE67943ADD57B93B7C28 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E64F19AEFD597090B3421659 /* SettingsView.swift */; };
 		208585715AA4F0DC710B13FB /* DSP.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDE87BACF6CB16B8D76FF827 /* DSP.swift */; };
@@ -44,6 +45,7 @@
 		5F7368D039B605535C24D60A /* BrumbrumApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrumbrumApp.swift; sourceTree = "<group>"; };
 		65E287CFD4EBF0A17A8A14A9 /* EngineDefinition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngineDefinition.swift; sourceTree = "<group>"; };
 		6CF76A13F0295BCC77FBDB4A /* Engines */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Engines; path = Brumbrum/Engines; sourceTree = SOURCE_ROOT; };
+		A286D2D901C37DB5D3A74713 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A2B40AF5C26DCBDCC2FCA731 /* Powertrain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Powertrain.swift; sourceTree = "<group>"; };
 		B8743EDE14FEBCDCC15E96EF /* ControlLoop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlLoop.swift; sourceTree = "<group>"; };
 		BE3A81B7C62678666FC4474E /* TripleBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripleBuffer.swift; sourceTree = "<group>"; };
@@ -75,6 +77,7 @@
 		42A9014F34FFEDD20A260836 /* Brumbrum */ = {
 			isa = PBXGroup;
 			children = (
+				A286D2D901C37DB5D3A74713 /* Assets.xcassets */,
 				5234081BE61DD9C44580B92C /* CarPlay.entitlements */,
 				6CF76A13F0295BCC77FBDB4A /* Engines */,
 				BFE7D3C1784203A1052CDA81 /* Info.plist */,
@@ -228,6 +231,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0414D5A2B894EE9D311579D0 /* Assets.xcassets in Resources */,
 				0F2DB7A064597FFD7827591B /* Engines in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -1,5 +1,7 @@
 # Brumbrum
 
+<img src="Brumbrum/Assets.xcassets/AppIcon.appiconset/AppIcon.png" width="128" alt="Brumbrum icon">
+
 A synthetic engine sound for an EV. The iPhone reads the car's motion from its own sensors, invents an rpm and a load, synthesises an engine note in real time, and plays it over CarPlay mixed on top of whatever else is playing.
 
 Built for an iPhone in an Audi S e-tron GT, but nothing in it is specific to that car.
@@ -47,3 +49,7 @@ Tools/render_test.sh lap /tmp/brumbrum-render
 ## Safety
 
 The app never touches the car's exterior pedestrian warning sound (AVAS). The output level has a hard ceiling and a speed-dependent cap. A brickwall limiter sits before the output. Keep the level modest: a note loud enough to beat road noise can also mask sirens, horns and the car's own warnings.
+
+## Icon
+
+Twin exhaust tips in white line art on black. `Tools/make_icon.py` generates `docs/icon.svg`. `Tools/render_icon.sh` rasterises it with headless Chrome into the asset catalog.
