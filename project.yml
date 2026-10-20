@@ -1,0 +1,70 @@
+name: Brumbrum
+options:
+  bundleIdPrefix: io.ub
+  deploymentTarget:
+    iOS: "18.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+targets:
+  Brumbrum:
+    type: application
+    platform: iOS
+    sources:
+      - path: Brumbrum
+        excludes:
+          - "Engines/**"
+      - path: Brumbrum/Engines
+        buildPhase: resources
+        type: folder
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: io.ub.brumbrum
+        TARGETED_DEVICE_FAMILY: "1"
+        GENERATE_INFOPLIST_FILE: YES
+        MARKETING_VERSION: "0.1"
+        CURRENT_PROJECT_VERSION: "1"
+        SUPPORTS_MACCATALYST: NO
+        # CarPlay needs Apple-granted entitlements, so device builds leave it out
+        # until ENABLE_CARPLAY is set to YES. Simulator builds always include it.
+        ENABLE_CARPLAY: "NO"
+        CARPLAY_ENTITLEMENTS_NO: Brumbrum/Phone.entitlements
+        CARPLAY_ENTITLEMENTS_YES: Brumbrum/CarPlay.entitlements
+        CODE_SIGN_ENTITLEMENTS: $(CARPLAY_ENTITLEMENTS_$(ENABLE_CARPLAY))
+        "CODE_SIGN_ENTITLEMENTS[sdk=iphonesimulator*]": Brumbrum/CarPlay.entitlements
+        "CODE_SIGN_IDENTITY[sdk=iphonesimulator*]": "-"
+    info:
+      path: Brumbrum/Info.plist
+      properties:
+        CFBundleDisplayName: Brumbrum
+        UILaunchScreen: {}
+        UIBackgroundModes: [audio, location]
+        UIRequiredDeviceCapabilities: [arm64]
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        UIStatusBarStyle: UIStatusBarStyleLightContent
+        UIUserInterfaceStyle: Dark
+        NSMotionUsageDescription: Brumbrum reads the car's acceleration from the phone's motion sensors to drive the engine sound.
+        NSLocationWhenInUseUsageDescription: GPS speed corrects the motion-sensor speed estimate so the engine note tracks the car.
+        NSMicrophoneUsageDescription: The microphone records a test sweep through the car speakers to measure audio latency.
+        UIFileSharingEnabled: true
+        LSSupportsOpeningDocumentsInPlace: true
+        CPSupportsDashboardNavigationScene: true
+        CPSupportsInstrumentClusterNavigationScene: true
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: true
+          UISceneConfigurations:
+            CPTemplateApplicationSceneSessionRoleApplication:
+              - UISceneClassName: CPTemplateApplicationScene
+                UISceneConfigurationName: CarPlay
+                UISceneDelegateClassName: $(PRODUCT_MODULE_NAME).CarPlaySceneDelegate
+            CPTemplateApplicationDashboardSceneSessionRoleApplication:
+              - UISceneClassName: CPTemplateApplicationDashboardScene
+                UISceneConfigurationName: CarPlayDashboard
+                UISceneDelegateClassName: $(PRODUCT_MODULE_NAME).CarPlayDashboardSceneDelegate
+            CPTemplateApplicationInstrumentClusterSceneSessionRoleApplication:
+              - UISceneClassName: CPTemplateApplicationInstrumentClusterScene
+                UISceneConfigurationName: CarPlayCluster
+                UISceneDelegateClassName: $(PRODUCT_MODULE_NAME).CarPlayClusterSceneDelegate

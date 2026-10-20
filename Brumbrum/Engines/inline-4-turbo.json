@@ -1,0 +1,132 @@
+{
+  "id": "inline-4-turbo",
+  "name": "Inline-4 Turbo",
+  "family": "combustion",
+  "version": 1,
+  "geometry": {
+    "cylinders": 4,
+    "strokes": 4,
+    "banks": 1,
+    "cycleDegrees": 720,
+    "firingAngles": [
+      0,
+      180,
+      360,
+      540
+    ],
+    "bankOf": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "range": {
+    "idleRpm": 850,
+    "idleWanderRpm": 25,
+    "redlineRpm": 6800,
+    "limiter": {
+      "mode": "hardCut",
+      "cutHz": 20,
+      "depth": 0.9
+    }
+  },
+  "drivetrain": {
+    "mode": "geared",
+    "gearRatios": [
+      3.5,
+      2.1,
+      1.45,
+      1.1,
+      0.9,
+      0.75
+    ],
+    "finalDrive": 4.1,
+    "upshiftRpm": 6200,
+    "downshiftRpm": 2200,
+    "shiftMs": 260,
+    "launchSlip": 0.6
+  },
+  "excitation": {
+    "grainSharpness": {
+      "atZeroLoad": 0.3,
+      "atFullLoad": 0.8
+    },
+    "grainGain": {
+      "atZeroLoad": 0.2,
+      "atFullLoad": 1.0
+    },
+    "cylinderVariance": 0.05
+  },
+  "exhaust": {
+    "pipeLengthMs": 4.5,
+    "pipeFeedback": 0.28,
+    "resonances": [
+      {
+        "hz": 130,
+        "q": 5,
+        "gain": 1.0
+      },
+      {
+        "hz": 380,
+        "q": 4,
+        "gain": 0.55
+      },
+      {
+        "hz": 1000,
+        "q": 3,
+        "gain": 0.3
+      }
+    ],
+    "overrun": {
+      "crackleDensity": 0.15,
+      "gain": 0.3,
+      "thresholdLoad": -0.4
+    }
+  },
+  "intake": {
+    "noiseGain": 0.45,
+    "cutoffHzAtIdle": 350,
+    "cutoffHzAtRedline": 3000,
+    "loadSensitivity": 0.9
+  },
+  "orders": [
+    {
+      "order": 2.0,
+      "gain": [
+        [
+          800,
+          0.5
+        ],
+        [
+          6800,
+          0.6
+        ]
+      ]
+    },
+    {
+      "order": 4.0,
+      "gain": [
+        [
+          800,
+          0.12
+        ],
+        [
+          6800,
+          0.25
+        ]
+      ]
+    }
+  ],
+  "turbo": {
+    "spoolRate": 2.2,
+    "maxBoost": 1.4,
+    "whistleHzAtMaxBoost": 5200,
+    "blowoffGain": 0.7
+  },
+  "mix": {
+    "masterGain": 0.8,
+    "exhaustToIntake": 0.65,
+    "windGain": 0.2
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "id": "crossplane-v8",
+  "name": "Crossplane V8",
+  "family": "combustion",
+  "version": 1,
+  "geometry": {
+    "cylinders": 8,
+    "strokes": 4,
+    "banks": 2,
+    "cycleDegrees": 720,
+    "firingAngles": [
+      0,
+      90,
+      180,
+      270,
+      360,
+      450,
+      540,
+      630
+    ],
+    "bankOf": [
+      0,
+      1,
+      0,
+      1,
+      1,
+      0,
+      1,
+      0
+    ]
+  },
+  "range": {
+    "idleRpm": 750,
+    "idleWanderRpm": 25,
+    "redlineRpm": 6500,
+    "limiter": {
+      "mode": "hardCut",
+      "cutHz": 18,
+      "depth": 0.9
+    }
+  },
+  "drivetrain": {
+    "mode": "geared",
+    "gearRatios": [
+      3.2,
+      2.0,
+      1.4,
+      1.0,
+      0.8,
+      0.65
+    ],
+    "finalDrive": 3.44,
+    "upshiftRpm": 6000,
+    "downshiftRpm": 2200,
+    "shiftMs": 250,
+    "launchSlip": 0.7
+  },
+  "excitation": {
+    "grainSharpness": {
+      "atZeroLoad": 0.25,
+      "atFullLoad": 0.9
+    },
+    "grainGain": {
+      "atZeroLoad": 0.15,
+      "atFullLoad": 1.0
+    },
+    "cylinderVariance": 0.03
+  },
+  "exhaust": {
+    "pipeLengthMs": 7.5,
+    "pipeFeedback": 0.35,
+    "resonances": [
+      {
+        "hz": 85,
+        "q": 6,
+        "gain": 1.0
+      },
+      {
+        "hz": 230,
+        "q": 4,
+        "gain": 0.6
+      },
+      {
+        "hz": 620,
+        "q": 3,
+        "gain": 0.3
+      }
+    ],
+    "overrun": {
+      "crackleDensity": 0.4,
+      "gain": 0.5,
+      "thresholdLoad": -0.3
+    }
+  },
+  "intake": {
+    "noiseGain": 0.4,
+    "cutoffHzAtIdle": 300,
+    "cutoffHzAtRedline": 2800,
+    "loadSensitivity": 0.8
+  },
+  "orders": [
+    {
+      "order": 0.5,
+      "gain": [
+        [
+          800,
+          0.3
+        ],
+        [
+          3000,
+          0.5
+        ],
+        [
+          6500,
+          0.2
+        ]
+      ]
+    },
+    {
+      "order": 1.5,
+      "gain": [
+        [
+          800,
+          0.2
+        ],
+        [
+          6500,
+          0.15
+        ]
+      ]
+    },
+    {
+      "order": 2.5,
+      "gain": [
+        [
+          800,
+          0.15
+        ],
+        [
+          6500,
+          0.12
+        ]
+      ]
+    },
+    {
+      "order": 4.0,
+      "gain": [
+        [
+          800,
+          0.5
+        ],
+        [
+          6500,
+          0.8
+        ]
+      ]
+    }
+  ],
+  "turbo": null,
+  "mix": {
+    "masterGain": 0.8,
+    "exhaustToIntake": 0.7,
+    "windGain": 0.2
+  }
+}

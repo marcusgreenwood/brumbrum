@@ -1,0 +1,127 @@
+{
+  "id": "inline-4",
+  "name": "Inline-4",
+  "family": "combustion",
+  "version": 1,
+  "geometry": {
+    "cylinders": 4,
+    "strokes": 4,
+    "banks": 1,
+    "cycleDegrees": 720,
+    "firingAngles": [
+      0,
+      180,
+      360,
+      540
+    ],
+    "bankOf": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "range": {
+    "idleRpm": 850,
+    "idleWanderRpm": 25,
+    "redlineRpm": 7000,
+    "limiter": {
+      "mode": "hardCut",
+      "cutHz": 20,
+      "depth": 0.9
+    }
+  },
+  "drivetrain": {
+    "mode": "geared",
+    "gearRatios": [
+      3.5,
+      2.1,
+      1.45,
+      1.1,
+      0.9,
+      0.75
+    ],
+    "finalDrive": 4.1,
+    "upshiftRpm": 6500,
+    "downshiftRpm": 2300,
+    "shiftMs": 280,
+    "launchSlip": 0.6
+  },
+  "excitation": {
+    "grainSharpness": {
+      "atZeroLoad": 0.35,
+      "atFullLoad": 0.85
+    },
+    "grainGain": {
+      "atZeroLoad": 0.2,
+      "atFullLoad": 1.0
+    },
+    "cylinderVariance": 0.05
+  },
+  "exhaust": {
+    "pipeLengthMs": 4.0,
+    "pipeFeedback": 0.3,
+    "resonances": [
+      {
+        "hz": 140,
+        "q": 5,
+        "gain": 1.0
+      },
+      {
+        "hz": 420,
+        "q": 4,
+        "gain": 0.6
+      },
+      {
+        "hz": 1100,
+        "q": 3,
+        "gain": 0.35
+      }
+    ],
+    "overrun": {
+      "crackleDensity": 0.1,
+      "gain": 0.3,
+      "thresholdLoad": -0.4
+    }
+  },
+  "intake": {
+    "noiseGain": 0.55,
+    "cutoffHzAtIdle": 400,
+    "cutoffHzAtRedline": 3500,
+    "loadSensitivity": 0.8
+  },
+  "orders": [
+    {
+      "order": 2.0,
+      "gain": [
+        [
+          800,
+          0.5
+        ],
+        [
+          7000,
+          0.7
+        ]
+      ]
+    },
+    {
+      "order": 4.0,
+      "gain": [
+        [
+          800,
+          0.15
+        ],
+        [
+          7000,
+          0.3
+        ]
+      ]
+    }
+  ],
+  "turbo": null,
+  "mix": {
+    "masterGain": 0.8,
+    "exhaustToIntake": 0.6,
+    "windGain": 0.2
+  }
+}

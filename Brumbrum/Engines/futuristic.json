@@ -1,0 +1,108 @@
+{
+  "id": "futuristic",
+  "name": "Futuristic",
+  "family": "synthetic",
+  "version": 1,
+  "geometry": null,
+  "range": {
+    "idleRpm": 900,
+    "idleWanderRpm": 15,
+    "redlineRpm": 12000,
+    "limiter": {
+      "mode": "softCut",
+      "cutHz": 10,
+      "depth": 0.3
+    }
+  },
+  "drivetrain": {
+    "mode": "direct",
+    "gearRatios": [],
+    "finalDrive": 1,
+    "upshiftRpm": 0,
+    "downshiftRpm": 0,
+    "shiftMs": 0,
+    "launchSlip": 0,
+    "topSpeedKph": 250
+  },
+  "excitation": null,
+  "generator": {
+    "type": "fm",
+    "baseOrder": 4,
+    "fmRatio": 1.5,
+    "fmIndexAtZeroLoad": 0.4,
+    "fmIndexAtFullLoad": 2.5,
+    "detuneCents": 12,
+    "voices": 3,
+    "formantLowHz": 400,
+    "formantHighHz": 3200,
+    "formantQ": 2.5,
+    "gain": 0.6
+  },
+  "exhaust": null,
+  "intake": {
+    "noiseGain": 0.15,
+    "cutoffHzAtIdle": 500,
+    "cutoffHzAtRedline": 4000,
+    "loadSensitivity": 0.6
+  },
+  "orders": [
+    {
+      "order": 2.0,
+      "gain": [
+        [
+          900,
+          0.25
+        ],
+        [
+          12000,
+          0.2
+        ]
+      ]
+    },
+    {
+      "order": 4.0,
+      "gain": [
+        [
+          900,
+          0.5
+        ],
+        [
+          12000,
+          0.5
+        ]
+      ]
+    },
+    {
+      "order": 8.0,
+      "gain": [
+        [
+          900,
+          0.15
+        ],
+        [
+          12000,
+          0.35
+        ]
+      ]
+    },
+    {
+      "order": 12.0,
+      "gain": [
+        [
+          900,
+          0.05
+        ],
+        [
+          12000,
+          0.2
+        ]
+      ]
+    }
+  ],
+  "turbo": null,
+  "mix": {
+    "masterGain": 0.75,
+    "exhaustToIntake": 0.8,
+    "windGain": 0.2
+  }
+}

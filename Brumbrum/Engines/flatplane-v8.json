@@ -1,0 +1,148 @@
+{
+  "id": "flatplane-v8",
+  "name": "Flatplane V8",
+  "family": "combustion",
+  "version": 1,
+  "geometry": {
+    "cylinders": 8,
+    "strokes": 4,
+    "banks": 2,
+    "cycleDegrees": 720,
+    "firingAngles": [
+      0,
+      90,
+      180,
+      270,
+      360,
+      450,
+      540,
+      630
+    ],
+    "bankOf": [
+      0,
+      1,
+      0,
+      1,
+      0,
+      1,
+      0,
+      1
+    ]
+  },
+  "range": {
+    "idleRpm": 950,
+    "idleWanderRpm": 20,
+    "redlineRpm": 8500,
+    "limiter": {
+      "mode": "hardCut",
+      "cutHz": 22,
+      "depth": 0.95
+    }
+  },
+  "drivetrain": {
+    "mode": "geared",
+    "gearRatios": [
+      3.2,
+      2.0,
+      1.4,
+      1.0,
+      0.8,
+      0.65
+    ],
+    "finalDrive": 3.7,
+    "upshiftRpm": 8000,
+    "downshiftRpm": 3000,
+    "shiftMs": 220,
+    "launchSlip": 0.6
+  },
+  "excitation": {
+    "grainSharpness": {
+      "atZeroLoad": 0.4,
+      "atFullLoad": 0.95
+    },
+    "grainGain": {
+      "atZeroLoad": 0.18,
+      "atFullLoad": 1.0
+    },
+    "cylinderVariance": 0.02
+  },
+  "exhaust": {
+    "pipeLengthMs": 4.5,
+    "pipeFeedback": 0.3,
+    "resonances": [
+      {
+        "hz": 140,
+        "q": 5,
+        "gain": 1.0
+      },
+      {
+        "hz": 380,
+        "q": 4,
+        "gain": 0.6
+      },
+      {
+        "hz": 950,
+        "q": 3,
+        "gain": 0.35
+      }
+    ],
+    "overrun": {
+      "crackleDensity": 0.25,
+      "gain": 0.4,
+      "thresholdLoad": -0.35
+    }
+  },
+  "intake": {
+    "noiseGain": 0.5,
+    "cutoffHzAtIdle": 400,
+    "cutoffHzAtRedline": 3800,
+    "loadSensitivity": 0.85
+  },
+  "orders": [
+    {
+      "order": 2.0,
+      "gain": [
+        [
+          1000,
+          0.3
+        ],
+        [
+          8500,
+          0.3
+        ]
+      ]
+    },
+    {
+      "order": 4.0,
+      "gain": [
+        [
+          1000,
+          0.6
+        ],
+        [
+          8500,
+          0.85
+        ]
+      ]
+    },
+    {
+      "order": 8.0,
+      "gain": [
+        [
+          1000,
+          0.1
+        ],
+        [
+          8500,
+          0.3
+        ]
+      ]
+    }
+  ],
+  "turbo": null,
+  "mix": {
+    "masterGain": 0.8,
+    "exhaustToIntake": 0.7,
+    "windGain": 0.2
+  }
+}
